@@ -26,7 +26,7 @@ clusters_dict = df[["cluster", "theme"]].drop_duplicates().set_index("cluster").
 plot_data = df['Y'].value_counts().sort_index().to_dict()
 # initialize selected cluster as the first in the dictionary
 df_selected_cluster = df[df["cluster"] == list(clusters_dict.keys())[0]]
-table_data = df[["up_votes", "title"]]
+table_data = df[["date_created", "up_votes", "title"]]
 # set up dictionary for timescale
 timescale_dict = {"Y": "Yearly", "M": "Monthly"}
 
@@ -54,7 +54,7 @@ def server(input, output, session):
                 header = dict(values = list(table_data.columns)),
                 cells = dict(values = table_data.transpose().values.tolist()
                 ),
-                columnwidth = [1, 10],
+                columnwidth = [2, 1, 10],
             )
         ]
     )
@@ -68,7 +68,7 @@ def server(input, output, session):
     def _():
         df_selected_cluster = df[df["cluster"] == input.cluster()]
         plot_data = df_selected_cluster[input.timescale()].value_counts().sort_index().to_dict()
-        table_data = df_selected_cluster[["up_votes", "title"]]
+        table_data = df_selected_cluster[["date_created", "up_votes", "title"]]
 
         histogram.data[0].x = list(plot_data.keys())
         histogram.data[0].y = list(plot_data.values())
